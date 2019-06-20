@@ -173,25 +173,6 @@ class SeleniumMiddleware:
                 request=request,
                 encoding="utf-8",
             )
-        if spider.name == 'yz_spider' and request.meta.get("type", None) == "details":
-            spider.driver.get(request.url)
-            time.sleep(2)
-            start_button1 = spider.driver.find_element_by_xpath(
-                f"//div/ul/li[6]/a/img")
-            ActionChains(spider.driver).move_to_element(start_button1).perform()
-            time.sleep(2)
-            js = "window.scrollTo(10000, 8000)"
-            spider.driver.execute_script(js)
-            time.sleep(2)
-            js = "window.scrollTo(10000, 8000)"
-            spider.driver.execute_script(js)
-            time.sleep(2)
-            return HtmlResponse(
-                url=spider.driver.current_url,
-                body=spider.driver.page_source,
-                request=request,
-                encoding="utf-8",
-            )
         if spider.name == 'yz_spider' and request.meta.get("type", None) == "details2":
             spider.driver.get(request.url)
             time.sleep(2)
@@ -217,7 +198,7 @@ class SeleniumMiddleware:
                 start_button1 = spider.driver.find_element_by_xpath(
                     f"//div/ul/li[8]/a/img")
                 ActionChains(spider.driver).move_to_element(start_button1).perform()
-                time.sleep(1)
+                time.sleep(3)
                 return HtmlResponse(
                     url=spider.driver.current_url,
                     body=spider.driver.page_source,
@@ -226,3 +207,23 @@ class SeleniumMiddleware:
                 )
             except:
                 print("只有1张或2张图")
+
+        if spider.name == 'yz_spider' and request.meta.get("type", None) == "details":
+            spider.driver.get(request.url)
+            time.sleep(2)
+            start_button1 = spider.driver.find_element_by_xpath(
+                f"//div/ul/li[6]/a/img")
+            ActionChains(spider.driver).move_to_element(start_button1).perform()
+            time.sleep(2)
+            js = "window.scrollTo(10000, 8000)"
+            spider.driver.execute_script(js)
+            time.sleep(2)
+            js = "window.scrollTo(10000, 8000)"
+            spider.driver.execute_script(js)
+            time.sleep(2)
+            return HtmlResponse(
+                url=spider.driver.current_url,
+                body=spider.driver.page_source,
+                request=request,
+                encoding="utf-8",
+            )

@@ -15,6 +15,11 @@ from book_yz.db.models import *
 
 num_list = session.query(Books.book_num).all()
 
+# num_list = ["9787111603665","9787115428028"]
+img1 = ''
+img2 = ''
+img3 = ''
+
 
 class YzSpiderSpider(CrawlSpider):
     name = 'yz_spider'
@@ -28,25 +33,22 @@ class YzSpiderSpider(CrawlSpider):
     def __init__(self):
         CrawlSpider.__init__(self, self.name)
         self.driver = create_bs_driver()
+
         self.driver.set_page_load_timeout(20)
+        self.num = ''
 
     def __del__(self):
+
         self.driver.quit()
 
     def start_requests(self):
-
-        for num in num_list[:3]:
-
+        for num in num_list[11:13]:
             if len(num[0]) > 12:
                 self.num = num[0]
-
                 for url in self.start_urls:
                     r = Request(url=url, dont_filter=True, callback=self.parse_item,
-                                meta={'type': 'home', 'num': num[0]})
+                                meta={'type': 'home', 'num': self.num})
                     yield r
-                    self.img1 = ''
-                    self.img2 = ''
-                    self.img3 = ''
 
     def parse_item(self, response):
         '''
@@ -57,6 +59,7 @@ class YzSpiderSpider(CrawlSpider):
         # 书籍的Url
 
         book_url = response.xpath("//div[2]/div[@id='search_nature_rg']/ul/li[1]/a/@href").extract_first()
+
         p = Request(url=book_url, dont_filter=True, callback=self.details_item2, meta={"type": "details2"})
         yield p
 
@@ -70,11 +73,11 @@ class YzSpiderSpider(CrawlSpider):
     def details_item2(self, response):
 
         book_img2 = response.xpath(f"//div[@class='pic_info']/div/a/img/@src").extract_first()
-        self.img2 = book_img2
+        img2 = book_img2
 
     def details_item3(self, response):
         book_img3 = response.xpath(f"//div[@class='pic_info']/div/a/img/@src").extract_first()
-        self.img3 = book_img3
+        img3 = book_img3
 
     def details_item(self, response):
         '''
@@ -95,7 +98,7 @@ class YzSpiderSpider(CrawlSpider):
         # 书籍图片列表
         book_img1 = response.xpath(f"//div[@class='pic_info']/div/a/img/@src").extract_first()
         # print(book_img1, "1")
-        self.img1 = book_img1
+        img1 = book_img1
         # 书籍详情图片
         book_details_img1 = response.xpath("//div[@id='feature']/div[2]/img[1]/@src").extract_first()
         # 书籍详情图片, 上一个可能没有
@@ -119,74 +122,90 @@ class YzSpiderSpider(CrawlSpider):
         else:
             for i in book_c1:
                 book_text += i
-        books = BooksYzItem(
-            book_num=book_num,
-            book_name=book_name,
-            book_class=book_class,
-            book_text=book_text,
-            is_delete=1,
-            create_time=datetime.datetime.now(), )
-        yield books
-
-        if book_details_img1 == None:
-            if book_details_img2 != None:
-                book_details_img = book_details_img2
-                book_imgs1 = BooksImgeYzItem(
-                    book_num=book_num,
-                    book_img1=self.img1,
-                    book_img2=self.img2,
-                    book_img3=self.img3,
-                    is_delete=1,
-                    book_details_img=book_details_img,
-                    create_time=datetime.datetime.now(),
-                )
-                yield book_imgs1
-            else:
-                if book_details_img3 != None:
-                    if book_details_img4 != None:
-                        book_details_img = book_details_img4
-                        book_imgs1 = BooksImgeYzItem(
-                            book_num=book_num,
-                            book_img1=self.img1,
-                            book_img2=self.img2,
-                            book_img3=self.img3,
-                            is_delete=1,
-                            book_details_img=book_details_img,
-                            create_time=datetime.datetime.now(),
-                        )
-                        yield book_imgs1
-                    else:
-                        book_details_img = book_details_img3
-                        book_imgs1 = BooksImgeYzItem(
-                            book_num=book_num,
-                            book_img1=self.img1,
-                            book_img2=self.img2,
-                            book_img3=self.img3,
-                            is_delete=1,
-                            book_details_img=book_details_img,
-                            create_time=datetime.datetime.now(),
-                        )
-                        yield book_imgs1
-                else:
-                    book_details_img = book_details_img4
-                    book_imgs1 = BooksImgeYzItem(
-                        book_num=book_num,
-                        book_img1=self.img1,
-                        book_img2=self.img2,
-                        book_img3=self.img3,
-                        is_delete=1,
-                        book_details_img=book_details_img,
-                        create_time=datetime.datetime.now(),
-                    )
-                    yield book_imgs1
-        else:
-            book_imgs1 = BooksImgeYzItem(
-                book_num=book_num,
-                book_img1=self.img1,
-                book_img2=self.img2,
-                book_img3=self.img3,
-                is_delete=1,
-                book_details_img=book_details_img1,
-                create_time=datetime.datetime.now(),
-            )
-            yield book_imgs1
+        print(img1, "1", img2, "2", img3)
+        # books = BooksYzItem(
+        #     book_num=book_num,
+        #     book_name=book_name,
+        #     book_class=book_class,
+        #     book_text=book_text,
+        #     is_delete=1,
+        #     create_time=datetime.datetime.now(), )
+        # yield books
+        # if len(self.img_list) == 1:
+        #     self.img_list.append("null")
+        # if len(self.img_list) == 2:
+        #     self.img_list.append("null")
+        # print(self.img_list)
+        # if book_details_img1 == None:
+        #     if book_details_img2 != None:
+        #         book_details_img = book_details_img2
+        #         book_imgs1 = BooksImgeYzItem(
+        #             book_num=book_num,
+        #             book_img1=self.img_list[0],
+        #             book_img2=self.img_list[1],
+        #             book_img3=self.img_list[2],
+        #             is_delete=1,
+        #             book_details_img=book_details_img,
+        #             create_time=datetime.datetime.now(),
+        #         )
+        #
+        #         yield book_imgs1
+        #
+        #
+        #     else:
+        #         if book_details_img3 != None:
+        #             if book_details_img4 != None:
+        #                 book_details_img = book_details_img4
+        #                 book_imgs1 = BooksImgeYzItem(
+        #                     book_num=book_num,
+        #                     book_img1=self.img_list[0],
+        #                     book_img2=self.img_list[1],
+        #                     book_img3=self.img_list[2],
+        #                     is_delete=1,
+        #                     book_details_img=book_details_img,
+        #                     create_time=datetime.datetime.now(),
+        #                 )
+        #
+        #                 yield book_imgs1
+        #
+        #             else:
+        #                 book_details_img = book_details_img3
+        #                 book_imgs1 = BooksImgeYzItem(
+        #                     book_num=book_num,
+        #                     book_img1=self.img_list[0],
+        #                     book_img2=self.img_list[1],
+        #                     book_img3=self.img_list[2],
+        #                     is_delete=1,
+        #                     book_details_img=book_details_img,
+        #                     create_time=datetime.datetime.now(),
+        #                 )
+        #
+        #                 yield book_imgs1
+        #
+        #         else:
+        #             book_details_img = book_details_img4
+        #             book_imgs1 = BooksImgeYzItem(
+        #                 book_num=book_num,
+        #                 book_img1=self.img_list[0],
+        #                 book_img2=self.img_list[1],
+        #                 book_img3=self.img_list[2],
+        #                 is_delete=1,
+        #                 book_details_img=book_details_img,
+        #                 create_time=datetime.datetime.now(),
+        #             )
+        #
+        #             yield book_imgs1
+        #
+        # else:
+        #     book_imgs1 = BooksImgeYzItem(
+        #         book_num=book_num,
+        #         book_img1=self.img_list[0],
+        #         book_img2=self.img_list[1],
+        #         book_img3=self.img_list[2],
+        #         is_delete=1,
+        #         book_details_img=book_details_img1,
+        #         create_time=datetime.datetime.now(),
+        #     )
+        #
+        #     yield book_imgs1
+        #
