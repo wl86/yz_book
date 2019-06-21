@@ -1,4 +1,3 @@
-users = ['admin', 'mike', 'john', 'lili', 'luxi']
-
-users.clear()
-print(users)
+test = "2333"
+test="1"
+print(test)

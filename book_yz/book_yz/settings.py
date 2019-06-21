@@ -68,7 +68,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'book_yz.pipelines.BookYzPipeline': 300,
-    'book_yz.sync_mysql_pipelines.SyncMySQLBookPipeLine': 305,
+    'book_yz.sync_mysql_pipelines.SyncMySQLBookPipeLine': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
