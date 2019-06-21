@@ -38,7 +38,7 @@ class YzSpiderSpider(CrawlSpider):
         self.driver.quit()
 
     def start_requests(self):
-        for num in num_list[11:18]:
+        for num in num_list:
             if len(num[0]) > 12:
                 self.num = num[0]
                 url = "http://product.dangdang.com/25576578.html"
@@ -84,8 +84,6 @@ class YzSpiderSpider(CrawlSpider):
 
         # 书籍图片列表
         book_img1 = response.xpath(f"//div[@class='pic_info']/div/a/img/@src").extract_first()
-        # print(book_img1, "1")
-
         # 书籍详情图片
         book_details_img1 = response.xpath("//div[@id='feature']/div[2]/img[1]/@src").extract_first()
         # 书籍详情图片, 上一个可能没有
@@ -193,12 +191,12 @@ class YzSpiderSpider(CrawlSpider):
         book_img2 = response.xpath("//ul[@id='main-img-slider']/li[7]/a/img/@src").extract_first()
         if book_img2 != None:
             book_url = response.url
-            print(book_url)
+
             u = Request(url=book_url, dont_filter=True, callback=self.details_item2, meta={"type": "details2"})
             yield u
             book_img3 = response.xpath("//ul[@id='main-img-slider']/li[8]/a/img/@src").extract_first()
             if book_img3 != None:
-                print(book_url)
+
                 book_url = response.url
                 u = Request(url=book_url, dont_filter=True, callback=self.details_item3, meta={"type": "details3"})
                 yield u
@@ -215,8 +213,8 @@ class YzSpiderSpider(CrawlSpider):
         else:
             book_num = book_str1.split("：")[1]
             img = session.query(BookImg).filter_by(book_num=book_num).first()
-            img.book_img3 = book_img2
-        print(2, book_img2)
+            img.book_img2 = book_img2
+
 
     def details_item3(self, response):
         book_str1 = response.xpath("//ul[@class='key clearfix']/li[5]/text()").extract_first()
@@ -226,10 +224,9 @@ class YzSpiderSpider(CrawlSpider):
         if book_str1 == None:
             book_num = book_str2.split("：")[1]
             img = session.query(BookImg).filter_by(book_num=book_num).first()
-            img.book_img2 = book_img3
+            img.book_img3 = book_img3
 
         else:
             book_num = book_str1.split("：")[1]
             img = session.query(BookImg).filter_by(book_num=book_num).first()
-            img.book_img2 = book_img3
-        print(3, book_img3)
+            img.book_img3 = book_img3
